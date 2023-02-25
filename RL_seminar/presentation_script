@@ -1,0 +1,115 @@
+Online reward shaping Jan Dziuba
+Deepak Pathak et al. Curiosity-driven exploration by self-supervised prediction. In Proceedings of the 34th International Conference on Machine Learning (ICML’17), 
+
+https://arxiv.org/abs/1705.05363
+;
+Yujing Hu et al. Learning to Utilize Shaping Rewards: A New Approach of Reward Shaping. NeurIPS2020 
+
+https://arxiv.org/abs/2011.02669
+other related
+
+
+
+layout
+
+hi everybody. Today I will be talking about an approach to reinforcement learning called Curiosity-driven Exploration by Self-supervised Prediction.
+
+next
+
+The thing that makes reinforcement learning so difficult is that we're dealing with sparse rewards. 
+Which means that for every input frame we don't actually know the target label that our network should produce 
+and therefore our agent needs to learn from very sparse feedback and sort of figure out by itself what action sequences led to the eventual reward.
+
+next
+
+So what are the ways of dealing with sparse rewards.
+Well we can use expert demonstration to show agent successful trajectory examples.
+For example in a game of chess agent learning by observing human games.
+
+Or goal relabeling. For example this arm robot trying to move the puck to the goal.
+If it moves to a different location. We tell him good job. 
+Now you know how to move the puck to that different location.
+
+Then we have revard shaping.
+So we can manually invent additional rewards for the model.
+For example maybe we give the robot a reward when the puck goes in the direction, 
+or gets closer to the goal. 
+It can be very hard to come up with good revard shaping.
+
+And then we have an idea I will be talking about today, which is intrinsic reward, 
+that comes from inside of the model.
+
+next
+
+Previous approaches to Intrinsic Reward include novelty and prediction Uncertainty / Error.
+
+
+One intuitive way to find novel states is to count how many times a state has been encountered and to assign a bonus accordingly. The bonus guides the agent’s behavior to prefer rarely visited states to common states.
+
+Models measuring “novelty” require a statistical model of the distribution of the environmental states, whereas measuring
+prediction error/uncertainty requires building a model of
+environmental dynamics that predicts the next state (st+1)
+given the current state (st) and the action.
+So both these models are hard to build in highdimensional continuous state spaces such as images.
+
+next
+
+This paper introduces
+
+Intrinsic curiosity module
+
+We have a state S_t, policy pi, and policy gives action a_t
+Action goes to environment E, and the environment gives state s_t+1 and extrinsic revard r_t^e
+But they also combine this with something they call intrinsic revard
+
+So how does intrinsic curiosity model work
+
+The general idea behind curiosity, is model being suprised by the environment. 
+Because if it is suprised it means that it found something new.
+But that is actually not true.
+
+Maybe it just found something that is hard to predict.
+Here the authors give example of scanario where the agent is observing the movement of tree leaves
+in a breeze.
+It is hard to predict the pixel location of each leaf, so the agent will always remain curious about the leaves.
+
+ 
+ We need a model that is curious about.
+ (1) things that can be controlled by the agent; 
+ (2) things that the agent cannot control but that can affect the agent 
+  (e.g. a vehicle drivenby another agent)
+And is unaffected by
+ (3) things out of the agent’s control and not affecting the agent
+ 
+ 
+ So how do we do that.
+ The idea is that we have an encoder that takes a state and outputs features of the state.
+ 
+ We train the encoder using inverse model, that takes features s_t and s_t+1 and predicts action.
+ That model has no interest in things that are not affecting the agent, so the features will contain only important info for the agent
+ 
+Then we have forward model that tries to predict featuress_t+1.
+If the forward model is wrong it means agent was suprised, because environment changed.
+And we get itrinsic reward.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
